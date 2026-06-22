@@ -1,0 +1,12 @@
+# Terraform state and credentials — never commit these
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/terraform.tfvars
+terraform/*.auto.tfvars
+
+# .NET build artifacts
+bin/
+obj/
+*.user
+.vs/

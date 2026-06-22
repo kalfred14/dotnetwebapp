@@ -1,0 +1,9 @@
+# Copy this file to terraform.tfvars and fill in your values.
+# terraform.tfvars is gitignored to keep credentials out of source control.
+
+resource_group_name = "rg-dotnet-app"
+location            = "East US"
+app_name            = "dotnetapp"
+environment         = "dev"
+sql_admin_username  = "sqladmin"
+sql_admin_password  = "ReplaceMe!2024"
