@@ -62,7 +62,7 @@ resource "azurerm_linux_web_app" "main" {
   }
 
   app_settings = {
-    "ASPNETCORE_ENVIRONMENT" = var.environment == "prod" ? "Production" : "Development"
+    "ASPNETCORE_ENVIRONMENT"   = var.environment == "prod" ? "Production" : "Development"
     "WEBSITE_RUN_FROM_PACKAGE" = "1"
   }
 
