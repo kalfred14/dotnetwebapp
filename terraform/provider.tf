@@ -11,6 +11,13 @@ terraform {
       version = "~> 3.0"
     }
   }
+
+  backend "azurerm" {
+    resource_group_name  = "rg-tfstate"
+    storage_account_name = "tfstatedotnetapp"
+    container_name       = "tfstate"
+    key                  = "dotnetapp.tfstate"
+  }
 }
 
 provider "azurerm" {
