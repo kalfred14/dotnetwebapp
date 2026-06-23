@@ -1,11 +1,11 @@
 output "web_app_url" {
   description = "Public HTTPS URL of the deployed web application"
-  value       = "https://${azurerm_linux_web_app.main.default_hostname}"
+  value       = "https://${azurerm_windows_web_app.main.default_hostname}"
 }
 
 output "web_app_name" {
   description = "Name of the Azure Web App (use this for `az webapp deploy`)"
-  value       = azurerm_linux_web_app.main.name
+  value       = azurerm_windows_web_app.main.name
 }
 
 output "resource_group_name" {
@@ -25,5 +25,5 @@ output "sql_database_name" {
 
 output "deploy_command" {
   description = "Azure CLI command to deploy a .zip package to the web app"
-  value       = "az webapp deploy --resource-group ${azurerm_resource_group.main.name} --name ${azurerm_linux_web_app.main.name} --src-path <your-app.zip> --type zip"
+  value       = "az webapp deploy --resource-group ${azurerm_resource_group.main.name} --name ${azurerm_windows_web_app.main.name} --src-path <your-app.zip> --type zip"
 }

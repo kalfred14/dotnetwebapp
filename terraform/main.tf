@@ -26,23 +26,23 @@ resource "azurerm_resource_group" "main" {
 }
 
 # ---------------------------------------------------------------------------
-# App Service Plan (Free F1 — Linux)
+# App Service Plan (Free F1 — Windows)
 # ---------------------------------------------------------------------------
 
 resource "azurerm_service_plan" "main" {
   name                = "asp-${local.unique_name}"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
-  os_type             = "Linux"
+  os_type             = "Windows"
   sku_name            = "F1"
   tags                = local.common_tags
 }
 
 # ---------------------------------------------------------------------------
-# Linux Web App (.NET 8)
+# Windows Web App (.NET 8)
 # ---------------------------------------------------------------------------
 
-resource "azurerm_linux_web_app" "main" {
+resource "azurerm_windows_web_app" "main" {
   name                = "app-${local.unique_name}"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_service_plan.main.location
@@ -54,10 +54,10 @@ resource "azurerm_linux_web_app" "main" {
     always_on = false
 
     application_stack {
-      dotnet_version = "8.0"
+      current_stack  = "dotnet"
+      dotnet_version = "v8.0"
     }
 
-    # Enforce minimum TLS 1.2
     minimum_tls_version = "1.2"
   }
 
