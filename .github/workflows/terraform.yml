@@ -112,7 +112,7 @@ jobs:
         run: dotnet publish src/src.csproj --configuration Release --no-build --output publish
 
       - name: Zip artifact
-        run: zip -r app.zip publish/
+        run: cd publish && zip -r ../app.zip . && cd ..
 
       - name: Azure Login
         uses: azure/login@v2
