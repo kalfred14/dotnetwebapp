@@ -119,10 +119,11 @@ jobs:
         with:
           creds: '{"clientId":"${{ secrets.ARM_CLIENT_ID }}","clientSecret":"${{ secrets.ARM_CLIENT_SECRET }}","subscriptionId":"${{ secrets.ARM_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.ARM_TENANT_ID }}"}'
 
+      - name: Set active subscription
+        run: az account set --subscription ${{ secrets.ARM_SUBSCRIPTION_ID }}
+
       - name: Deploy to Azure Web App
-        run: |
-          az webapp deploy \
-            --resource-group ${{ needs.terraform.outputs.resource_group }} \
-            --name ${{ needs.terraform.outputs.web_app_name }} \
-            --src-path app.zip \
-            --type zip
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ needs.terraform.outputs.web_app_name }}
+          package: app.zip
