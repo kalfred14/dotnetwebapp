@@ -3,12 +3,8 @@ name: Terraform
 on:
   push:
     branches: [ master ]
-    paths:
-      - 'terraform/**'
   pull_request:
     branches: [ master ]
-    paths:
-      - 'terraform/**'
   workflow_dispatch:
 
 env:
@@ -27,12 +23,18 @@ jobs:
       run:
         working-directory: terraform
 
+    outputs:
+      web_app_name: ${{ steps.tf_output.outputs.web_app_name }}
+      resource_group: ${{ steps.tf_output.outputs.resource_group }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
 
       - name: Terraform Init
         run: terraform init
@@ -77,3 +79,50 @@ jobs:
             -auto-approve \
             -no-color \
             tfplan
+
+      - name: Get Terraform Outputs
+        id: tf_output
+        if: github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        run: |
+          echo "web_app_name=$(terraform output -raw web_app_name)" >> $GITHUB_OUTPUT
+          echo "resource_group=$(terraform output -raw resource_group_name)" >> $GITHUB_OUTPUT
+
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    needs: terraform
+    if: github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore src/src.csproj
+
+      - name: Build
+        run: dotnet build src/src.csproj --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish src/src.csproj --configuration Release --no-build --output publish
+
+      - name: Zip artifact
+        run: zip -r app.zip publish/
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: '{"clientId":"${{ secrets.ARM_CLIENT_ID }}","clientSecret":"${{ secrets.ARM_CLIENT_SECRET }}","subscriptionId":"${{ secrets.ARM_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.ARM_TENANT_ID }}"}'
+
+      - name: Deploy to Azure Web App
+        run: |
+          az webapp deploy \
+            --resource-group ${{ needs.terraform.outputs.resource_group }} \
+            --name ${{ needs.terraform.outputs.web_app_name }} \
+            --src-path app.zip \
+            --type zip

@@ -55,7 +55,7 @@ resource "azurerm_windows_web_app" "main" {
 
     application_stack {
       current_stack  = "dotnet"
-      dotnet_version = "v8.0"
+      dotnet_version = "v6.0"
     }
 
     minimum_tls_version = "1.2"
