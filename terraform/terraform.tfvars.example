@@ -2,7 +2,7 @@
 # terraform.tfvars is gitignored to keep credentials out of source control.
 
 resource_group_name = "rg-dotnet-app"
-location            = "East US"
+location            = "West US 2"
 app_name            = "dotnetapp"
 environment         = "dev"
 sql_admin_username  = "sqladmin"
